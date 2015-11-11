@@ -1,5 +1,8 @@
 function Sample(sampleName) {
-	self = this;
+	this.sampleName = sampleName;
+	this.variant = [];
+}
 
-	self.sampleName = sampleName;
+Sample.prototype.addVariant = function (variant) {
+	this.variant.push(variant);
 }
