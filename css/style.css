@@ -5,3 +5,22 @@ body {
 	padding: 40px 15px;
 	text-align: center;
 }
+#allele-selectors {
+	width: 80%;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+.sample-entry-container {
+	display: inline-block;
+	height: 200px;
+}
+.sample-entry-title {
+	position: absolute;
+	margin-left: 12px;
+}
+.sample-entry {
+	margin: 20px 10px; 10px; 10px;;
+	display: inline-block;
+	height: 300px;
+}
