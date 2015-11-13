@@ -51,24 +51,16 @@ function addSampleGraph(sample) {
 	console.log("maxCount: ", maxCount);
 	// console.log(countsAndFrequencies);
 
-	var method = 3;
-	var methods = [ //interpolation methods
-		'linear',
-		'step-before',
-		'step-after',
-		'basis',
-		'basis-open',
-		'basis-closed',
-		'bundle',
-		'cardinal',
-		'cardinal-open',
-		'cardinal-closed',
-		'monotone'
-    ];
-
-	var margin = {top: 40, right: 40, bottom: 40, left:40},
+	var margin = {top: 20, right: 20, bottom: 30, left:50},
 		width = 600,
 		height = 500;
+
+	var x = d3.scale.linear()
+		.domain([minAF, maxAF])
+		.range([0, width - (margin.left + margin.right)]);
+	var y = d3.scale.linear()
+		.domain([minCount, maxCount])
+		.range([height - (margin.top + margin.bottom), 0]);
 
 	var xAxis = d3.svg.axis()
 		.scale(x)
@@ -78,11 +70,38 @@ function addSampleGraph(sample) {
 		.scale(y)
 		.orient('left');
 
-	var x = d3.scale.linear().range([0, w]),
-		y = d3.scale.linear().range([h, 0]);
-
 	var line = d3.svg.line()
 		.x(function(d) { return x(d[0]); })
 		.y(function(d) { return y(d[1]); });
+
+	var svg = d3.select("body").append("svg")
+		.attr("width", width + margin.left + margin.right)
+		.attr("height", height + margin.top + margin.bottom)
+		.append("g")
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+	var lineGraph = svg.append("path")
+		.attr("d", line(frequenciesAndCounts))
+		.attr("stroke", "blue")
+	    .attr("stroke-width", 2)
+	    .attr("fill", "none");
+
+	var translationYAmount = height - (margin.top + margin.bottom);
+	svg.append("g")
+		.attr("class", "x axis")
+		.attr("transform", "translate(0," + translationYAmount + ")")
+		.call(xAxis);
+
+	svg.append("g")
+		.attr("class", "y axis")
+		.call(yAxis)
+		.append("text")
+		.attr("transform", "rotate(-90)")
+		.attr("y", 6)
+		.attr("dy", ".71em")
+		.style("text-anchor", "end")
+		.text("Frequency Count");
+
+
 
 }
