@@ -1,3 +1,5 @@
+var samplePlots = {};
+
 function loadSampleDataClicked() {
 	$('#load-sample-button').prop("disabled",true);
 	loadSampleData();
@@ -37,6 +39,10 @@ function addSelector(sample) {
 	});
 }
 
+function updateSampleGraph(sample, minAF, maxAF) {
+
+}
+
 function addSampleGraph(sample) {
 	var maxAF = sample.getMaximumAlternateCount();
 	var minAF = sample.getMinimumAlternateCount();
@@ -45,15 +51,18 @@ function addSampleGraph(sample) {
 	var maxCount = d3.max(frequenciesAndCounts, function (d) { return d[1]; });
 	var minCount = d3.min(frequenciesAndCounts, function (d) { return d[1]; });
 
+	/*
 	console.log("minaf: ", minAF);
 	console.log("maxaf: ", maxAF);
 	console.log("mincount: ", minCount);
 	console.log("maxCount: ", maxCount);
+	*/
 	// console.log(countsAndFrequencies);
+	console.log(sample.sampleName + "-plot");
 
-	var margin = {top: 20, right: 20, bottom: 30, left:50},
-		width = 600,
-		height = 500;
+	var margin = {top: 10, right: 0, bottom: 10, left:60};
+	var width = 600;
+	var height = 300;
 
 	var x = d3.scale.linear()
 		.domain([minAF, maxAF])
@@ -74,7 +83,7 @@ function addSampleGraph(sample) {
 		.x(function(d) { return x(d[0]); })
 		.y(function(d) { return y(d[1]); });
 
-	var svg = d3.select("body").append("svg")
+	var svg = d3.select("#" + sample.sampleName + "-plot").append("svg")
 		.attr("width", width + margin.left + margin.right)
 		.attr("height", height + margin.top + margin.bottom)
 		.append("g")
@@ -102,6 +111,6 @@ function addSampleGraph(sample) {
 		.style("text-anchor", "end")
 		.text("Frequency Count");
 
-
+	samplePlots[sample.sampleName] = svg;
 
 }
