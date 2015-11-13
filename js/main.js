@@ -38,55 +38,51 @@ function addSelector(sample) {
 }
 
 function addSampleGraph(sample) {
-	var margin = {top: 20, right: 20, bottom: 30, left: 50},
-    width = 760 - margin.left - margin.right,
-    height = 300 - margin.top - margin.bottom;
+	var maxAF = sample.getMaximumAlternateCount();
+	var minAF = sample.getMinimumAlternateCount();
+	var frequenciesAndCounts = sample.getFrequenciesAndCounts();
 
-	var maxAF = d3.max(sample.variants, function (v) { var maximum = 0; for (var i = 0; i < v.alternateCounts.length; ++i) { maximum = (v.alternateCounts[i] > maximum) ? v.alternateCounts[i] : maximum; } return maximum; });
+	var maxCount = d3.max(frequenciesAndCounts, function (d) { return d[1]; });
+	var minCount = d3.min(frequenciesAndCounts, function (d) { return d[1]; });
 
-	var minAF = d3.min(sample.variants, function (v) { var minimum = 0; for (var i = 0; i < v.alternateCounts.length; ++i) { minimum = (v.alternateCounts[i] < minimum) ? v.alternateCounts[i] : minimum; } return minimum; });
+	console.log("minaf: ", minAF);
+	console.log("maxaf: ", maxAF);
+	console.log("mincount: ", minCount);
+	console.log("maxCount: ", maxCount);
+	// console.log(countsAndFrequencies);
 
-	var afCounts = {};
-	var maxCount = 0;
-	var minCount = 0;
-	for (var i = 0; i < sample.variants.length; ++i) {
-		var v = sample.variants[i];
-		for (var j = 0; j < v.alternateCounts.length; ++j) {
-			if (typeof afCounts[v.alternateCounts[j]] === "undefined") {
-				afCounts[v.alternateCounts[j]] = 1;
-			}
-			else {
-				afCounts[v.alternateCounts[j]] += 1;
-			}
-			maxCount = (afCounts[v.alternateCounts[j]] > maxCount) ? afCounts[v.alternateCounts[j]] : maxCount;
-			minCount = (afCounts[v.alternateCounts[j]] < minCount) ? afCounts[v.alternateCounts[j]] : minCount;
-		}
-	}
-	var maxAFCounts = d3.max(afCounts, function (afCount) { console.log(afCount); return afCount[1]; });
-	console.log(minCount);
-	console.log(maxCount);
+	var method = 3;
+	var methods = [ //interpolation methods
+		'linear',
+		'step-before',
+		'step-after',
+		'basis',
+		'basis-open',
+		'basis-closed',
+		'bundle',
+		'cardinal',
+		'cardinal-open',
+		'cardinal-closed',
+		'monotone'
+    ];
 
-	var x = d3.scale.linear()
-		.range([minAF, maxAF]);
-	var y = d3.scale.linear()
-		.range([minCount, maxCount]);
+	var margin = {top: 40, right: 40, bottom: 40, left:40},
+		width = 600,
+		height = 500;
 
 	var xAxis = d3.svg.axis()
 		.scale(x)
-		.orient("bottom");
+		.orient('bottom');
 
 	var yAxis = d3.svg.axis()
 		.scale(y)
-		.orient("left");
+		.orient('left');
+
+	var x = d3.scale.linear().range([0, w]),
+		y = d3.scale.linear().range([h, 0]);
 
 	var line = d3.svg.line()
-		.x(function(v) { var maximum = 0; for (var i = 0; i < v.alternateCounts.length; ++i) { maximum = (v.alternateCounts[i] > maximum) ? v.alternateCounts[i] : maximum; } return x(maximum); })
-		   .y(function(v) { var maximum = 0; for (var i = 0; i < v.alternateCounts.length; ++i) { maximum = (v.alternateCounts[i] > maximum) ? v.alternateCounts[i] : maximum; } return y(afCounts[maximum]); });
+		.x(function(d) { return x(d[0]); })
+		.y(function(d) { return y(d[1]); });
 
-	var svg = d3.select(sample.sampleName + "-slider").append("svg")
-		.data(sample.variants, function (v) { return v)
-		.attr("width", width + margin.left + margin.right)
-		.attr("height", height + margin.top + margin.bottom)
-		.append("g")
-		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 }

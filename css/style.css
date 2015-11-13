@@ -1,6 +1,16 @@
 body {
 	padding-top: 50px;
 }
+svg {
+    background: whitesmoke;
+    border: thin black solid;
+	margin-left: 50px;
+}
+
+.poly {
+    stroke: steelblue;
+    stroke-width: 2px;
+}
 .title-template {
 	padding: 40px 15px;
 	text-align: center;
