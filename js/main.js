@@ -11,7 +11,6 @@ function loadSampleData() {
 		var samples = vcf.getSamples();
 		for (var sampleName in samples) {
 			var sample = samples[sampleName];
-			console.log(sample);
 			addSelector(sample);
 			addSampleGraph(sample);
 		}
@@ -19,6 +18,13 @@ function loadSampleData() {
 }
 
 function addSelector(sample) {
+	var maxAF = sample.getMaximumAlternateCount();
+	var minAF = sample.getMinimumAlternateCount();
+	var frequenciesAndCounts = sample.getFrequenciesAndCounts();
+
+	var maxCount = d3.max(frequenciesAndCounts, function (d) { return d[1]; });
+	var minCount = d3.min(frequenciesAndCounts, function (d) { return d[1]; });
+
 	var source = $('#sample-template').html();
 	var template = Handlebars.compile(source);
 	var html = template(sample);
@@ -26,21 +32,70 @@ function addSelector(sample) {
 
 	var connectSlider = document.getElementById(sample.sampleName + "-slider");
 	noUiSlider.create(connectSlider, {
-		start: [20, 80],
+		start: [minAF, maxAF],
 		connect: false,
 		orientation: 'vertical',
 		range: {
-			'min': 0,
-			'max': 100
+			'min': minAF,
+			'max': maxAF
 		}
 	});
-	connectSlider.noUiSlider.on('slide', function (data) {
-		console.log(data);
+	$('#' + sample.sampleName + '-min').html(minAF);
+	$('#' + sample.sampleName + '-max').html(maxAF);
+	connectSlider.noUiSlider.on('slide', function (data, index) {
+		var minAF = parseInt(data[0]);
+		var maxAF = parseInt(data[1]);
+		updateSampleGraph(sample, minAF, maxAF);
 	});
 }
 
 function updateSampleGraph(sample, minAF, maxAF) {
+	var graphInfo = samplePlots[sample.sampleName];
+	var svg = graphInfo.svg;
+	var x = graphInfo.x;
+	var y = graphInfo.y;
+	var xAxis = graphInfo.xAxis;
+	var yAxis = graphInfo.yAxis;
 
+	var minCount = 0;
+	var maxCount = 0;
+	var frequenciesAndCounts = sample.getFrequenciesAndCounts();
+	var fac = [];
+	for (var i = 0; i < frequenciesAndCounts.length; ++i) {
+		if (frequenciesAndCounts[i][0] >= minAF && frequenciesAndCounts[i][0] <= maxAF) {
+			minCount = (frequenciesAndCounts[i][1] <= minCount) ? frequenciesAndCounts[i][1] : minCount;
+			maxCount = (frequenciesAndCounts[i][1] >= maxCount) ? frequenciesAndCounts[i][1] : maxCount;
+			fac.push(frequenciesAndCounts[i]);
+		}
+	}
+
+	// Scale the range of the data again
+    x.domain([minAF, maxAF]);
+	xAxis.scale(x);
+
+	y.domain([minCount, maxCount]);
+	yAxis.scale(y);
+
+	var line = d3.svg.line()
+		.interpolate("basis")
+		.x(function(d) { return x(d[0]); })
+		.y(function(d) { return y(d[1]); });
+
+	svg.selectAll("path").remove();
+	var lineGraph = svg.append("path")
+		.attr("d", line(fac))
+		.attr("stroke", "steelblue")
+	    .attr("stroke-width", 2)
+	    .attr("fill", "none");
+
+	svg.select(".xaxis")
+		.call(xAxis);
+
+	svg.select(".yaxis")
+		.call(yAxis);
+
+	$('#' + sample.sampleName + '-min').html(minAF);
+	$('#' + sample.sampleName + '-max').html(maxAF);
 }
 
 function addSampleGraph(sample) {
@@ -51,16 +106,7 @@ function addSampleGraph(sample) {
 	var maxCount = d3.max(frequenciesAndCounts, function (d) { return d[1]; });
 	var minCount = d3.min(frequenciesAndCounts, function (d) { return d[1]; });
 
-	/*
-	console.log("minaf: ", minAF);
-	console.log("maxaf: ", maxAF);
-	console.log("mincount: ", minCount);
-	console.log("maxCount: ", maxCount);
-	*/
-	// console.log(countsAndFrequencies);
-	console.log(sample.sampleName + "-plot");
-
-	var margin = {top: 10, right: 0, bottom: 10, left:60};
+	var margin = {top: 10, right: 0, bottom: 30, left:80};
 	var width = 600;
 	var height = 300;
 
@@ -80,6 +126,7 @@ function addSampleGraph(sample) {
 		.orient('left');
 
 	var line = d3.svg.line()
+		.interpolate("basis")
 		.x(function(d) { return x(d[0]); })
 		.y(function(d) { return y(d[1]); });
 
@@ -91,26 +138,31 @@ function addSampleGraph(sample) {
 
 	var lineGraph = svg.append("path")
 		.attr("d", line(frequenciesAndCounts))
-		.attr("stroke", "blue")
+		.attr("stroke", "steelblue")
 	    .attr("stroke-width", 2)
 	    .attr("fill", "none");
 
 	var translationYAmount = height - (margin.top + margin.bottom);
 	svg.append("g")
-		.attr("class", "x axis")
+		.attr("class", "xaxis")
 		.attr("transform", "translate(0," + translationYAmount + ")")
-		.call(xAxis);
+		.call(xAxis)
+		.append("text")
+		.attr("y", 35)
+		.attr("x", 90)
+		.attr("dy", ".71em")
+		.style("text-anchor", "end")
+		.text("Allele Frequency");
 
 	svg.append("g")
-		.attr("class", "y axis")
+		.attr("class", "yaxis")
 		.call(yAxis)
 		.append("text")
 		.attr("transform", "rotate(-90)")
-		.attr("y", 6)
+		.attr("y", -69)
 		.attr("dy", ".71em")
 		.style("text-anchor", "end")
 		.text("Frequency Count");
 
-	samplePlots[sample.sampleName] = svg;
-
+	samplePlots[sample.sampleName] = { svg: svg, x: x, y: y, xAxis: xAxis, yAxis: yAxis };
 }
