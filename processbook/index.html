@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+		<!-- Template derived from https://getbootstrap.com/examples/starter-template/ -->
+		<link rel="stylesheet" type="text/css" href="/css/style.css">
+		<link rel="stylesheet" type="text/css" href="/css/nouislider.min.css">
+		<link rel="stylesheet" href="/css/bootstrap.min.css">
+		<link rel="stylesheet" href="/css/bootstrap-theme.min.css">
+	</head>
+	<script type="text/javascript">
+		
+	</script>
+	<body>
+
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="#">Process Book</a>
+				</div>
+			</div>
+		</nav>
+
+		<div class="container">
+			<h1>Subclone Analysis Tool Process Book</h1>
+			<h3>Overview and Motivation</h3>
+			<div>
+				<p>The primary reason for this visualization will be to allow its users to analyze genetic somatic variants through multiple timepoints. Specifically this tool should illustrate how tumor variants change allele frequencies through the sample time points. From this analysis we will be able to quickly see which variants (and by extension, tumor populations that contain these variants) are disappearing and which variants are thriving. This will, hopefully, help researchers understand how the treatments between time points are affecting the tumor cell populations. To put the benefits succinctly; this visualization will allow users to:</p>
+					<ul>
+						<li>View variants through the sample time points.</li>
+						<li>Mark variants to aid in visually tracking through the various time points.</li>
+						<li>Provide a mechanism to help group variants that are part of tumor populations to better understand their relationships through time.</li>
+					</ul>
+				
+			</div>
+			<h3>Related Work</h3>
+			<div>
+				<p>I work at the USTAR Center for Genetic Discovery at the University of Utah. I have had a strong interest in cancer research, specifically with genetic variants that potentially cause cancer as well as the genetic mutations that promote/hinder tumor growth throughout tumor's evolution.</p>
+				<p>Currently our lab is analyzing tumor sequences from a single individual who, unfortunately, developed breast cancer and underwent 3 chemotherapy treatments. This data is the assembled genome of this individual at 5 time points; the first time point being a sample collected from healthy tissue and samples 2 through 5 were captured at the tumor site after various rounds of chemotherapy.</p>
+				<p>I have chosen to focus my project on this dataset because there are lots of fascinating questions that could be explored with this cancer dataset. Because of the reduction of costs in sequencing as well as the accuracy of next generation sequencing technologies, <a href="http://www.yourdictionary.com/subclone" target="_blank">subclone</a> analysis could potentially become a powerful way to direct patient treatment options. Also, hopefully, it will provide a benefit to others who have similar data and want to perform similar analysis.</p>
+				<p>This work is heavily influenced by <a href="http://www.ncbi.nlm.nih.gov/pubmed/25160522" target="_blank">Yi Qiao&#39;s work</a>. Also, Yi has been a outstanding resource for this project. He has spent time working with me to help me better understand the biology as well as the current research in this area.</p>
+			</div>
+			<h3>Questions</h3>
+			<div>
+				<p>This visualization is a tool to help quickly identify which variants should be clustered together for subclone analysis. The figure below illustrates how you can understand subclone structures from allele frequencies. In the parallel coordinates plot each y-axis is the allele frequency of the exome <a href="https://en.wikipedia.org/wiki/Missense_mutation">missense variants</a> at timepoints (after each chemotherapy).</p>
+				<div style="text-align: center"><img src="images/subclone-diagram.png" alt="subclone-diagram" align="center" /></div>
+				<p>In the diagram above you will notice that the parallel coordinate lines are clustered using color coded lines that correspond to the bubbles in section B. These bubbles represent variant evolutionary lineage and are traced forward to show which variant populations (subclones) are reduced and which thrive.</p>
+				<p>In this, it is important to note that at B3 a single subclone survives and later mutates until the final timepoint. This tells us that the chemotherapy was likely working but was discontinued, possibly because of unbearable side effects. This type of on-the-fly analysis could be incredibly useful to clinicians, if they have an deeper understanding of how the tumor is responding to the treatment they could potentially switch to a similar treatment adjust current treatment accordingly. So emphisize the point, it is essential to correctly identify each variant into its corresponding subclone structure. This tool will help us query our variants through multi-dimensional (timepoints, allele frequency) data to help identify subclone structures.</p>
+			</div>
+			<div>
+				<h3>Data</h3>
+				<p>For this visualization I have a multi-sample <a href="https://github.com/dillonl/lva/tree/d35762c98c8eac6df64b0d2b604f7c2e18b0b667/data" target="_blank">VCF</a> with 5 timepoints for an individual with Breast Cancer captured over the course of 2 years. I chose not to format the data but rather to write a VCF parser. The reason for this is because I wanted this project to have the flexibility to be useful with any multi-sample VCF. This way, users can simply select their standard VCF file and begin visualizing thier data without the need for formatting into a special JSON file. The data has over 15000 variants but I am planning on allowing users to filter on exome. This will cut the size down to about 60 variants which is much simpler to visualize.</p>
+				<p>It will be possible to extract more data (variant annotations that describe more detailed metrics about the variant) and may be included in a table that can be used to filter and sort which could aid in the final visualization.</p>
+			</div>
+			<div>
+				<h3>Exploratory Data Analysis</h3>
+				<p>Initially I wanted to help filter the data using a standard line graph. The graph below will illustrate the type of analysis I was looking for:</p>
+				<div style="text-align: center"><img src="images/subclone_seeker_histo.jpg" alt="subclone-diagram" align="center" /></div>
+				<p>This diagram plots the comes from Yi&#39;s <a href="http://www.ncbi.nlm.nih.gov/pubmed/25160522" target="_blank">paper on subclone analysis</a> and highlights the number of viable structures within variant data. Later I will show early screenshots from my visualization that tried to extract subclones using a similar plotting algorithm. The attractive feature of this plot is that you can more-or-less &quot;eyeball&quot; the subclone structures. I had the idea that you could change the range of the counts (or allele frequencies) along the y-axis and isolate specific variants which would hopefully cause the subclones to &quot;pop out&quot;. I have better ideas now but I did implement a full working version of this <a href="https://github.com/dillonl/lva/tree/d35762c98c8eac6df64b0d2b604f7c2e18b0b667" target="_blank">visualization</a>.</p>
+			</div>
+			<div>
+				<h3>Design Evolution</h3>
+				<p>In the early days I was interested in scatter plots I spoke with Yi about this and he said he already tried it and it's a complete mess so rather than attempt to recreate a mess I decided to approach it using line graphs, which I think looks very clean</p>
+				<p>Looking at the subclone histogram plots above I tried to model line graphs based on that data. See below:</p>
+				<div style="text-align: center"><img src="images/all-old-plots.png" height="700" alt="subclone-diagram" align="center" /></div>
+				<p>Originally I was going to have a table below to indicate which variants are within the range of the filtered plots but in this format it is impossible to get fine-grained with the selections. See below how the filter bar can help isolate different peaks.</p>
+				<div style="text-align: center"><img src="images/old-zoomed-in.png" alt="subclone-diagram" align="center" /></div>
+				<p>As you can see, this method is pretty clean it really isn't good for filtering. In each plot (except B0) it appears that there are 2 bumps which looks like there are just 2 subclones, but we know from other analysis that this data probably has 9 subclones. This method is not very successful at isolating the various subclones.</p>
+				<p>After meeting with the course TA (Alex Bigelow) he encouraged me to look more into the idea of a parallel coordinate plot and also to get a bit more direction from Yi on various filtering methods. I am glad for both conversations because it switched my focus from filtering a large dataset using these cumbersome line plots to a parallel coordinate plot using selection tools and data tables. Below you will see a mockup (taken directly from <a href="https://syntagmatic.github.io/parallel-coordinates/examples/slickgrid.html" target="_blank">this website</a>.</p>
+				<div style="text-align: center"><img src="images/parallel-coordinates-example.png" height="700" alt="subclone-diagram" align="center" /></div>
+				<p>This parallel coordinate plot is a much better way to view and filter the data and I will discuss more about this in the next section</p>
+			</div>
+			<div>
+				<h3>Implementation</h3>
+				<p>Still working on the implementation.</p>
+			</div>
+			<div>
+				<h3>Evaluation</h3>
+				<p>Still to come</p>
+			</div>
+		</div>
+
+	</body>
+</html>
