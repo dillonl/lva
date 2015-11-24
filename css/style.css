@@ -1,39 +1,49 @@
 body {
-	padding-top: 50px;
+  font-size: 14px;
+  font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+  margin: 24px;
+  background: #fcfcfc;
+  line-height: 1.45em;
 }
-svg {
-    background: whitesmoke;
-    border: thin black solid;
-	margin-left: 50px;
+a {
+  color: #555;
 }
-
-.poly {
-    stroke: steelblue;
-    stroke-width: 2px;
+a:hover {
+  color: #000;
 }
-.title-template {
-	padding: 40px 15px;
-	text-align: center;
+ul {
+  margin: 0 20px;
+  padding: 0;
 }
-#allele-selectors {
-	width: 80%;
-	display: block;
-	margin-left: auto;
-	margin-right: auto;
+.dark {
+  background: #222;
 }
-.sample-entry-container {
-	display: inline-block;
-	height: 200px;
+p {
+  width: 560px;
 }
-.sample-entry-title {
-	position: absolute;
-	margin-left: 12px;
+pre {
+  color: #444;
+  font-family: Ubuntu Mono, Monaco, monospace;
+  padding: 4px 8px;
+  background: #f2f2f2;
+  border: 1px solid #ccc;
 }
-.sample-entry {
-	margin: 20px 10px; 10px; 10px;;
-	display: inline-block;
-	height: 300px;
+h1 small {
+  font-weight: normal;
+  font-size: 0.5em;
 }
-.plots {
-	display: inline-block;
+h3 {
+  margin-top: 40px;
+}
+.float {
+  float: left;
+}
+.centered {
+  text-align: center;
+}
+.hide {
+  display: none;
+}
+input {
+  font-size: 16px;
 }
