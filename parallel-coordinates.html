@@ -1,6 +1,6 @@
 
 <!doctype html>
-<title>Linking to SlickGrid</title>
+<title>Subclone Analysis Tool</title>
 
 <!-- SlickGrid -->
 <link rel="stylesheet" href="lib/slickgrid/slick.grid.css" type="text/css"/>
@@ -11,6 +11,7 @@
 <script src="lib/slickgrid/lib/jquery.event.drag-2.2.js"></script>
 <script src="lib/slickgrid/slick.core.js"></script>
 <script src="lib/slickgrid/slick.grid.js"></script>
+<script src="lib/slickgrid/plugins/slick.rowselectionmodel.js"></script>
 <script src="lib/slickgrid/controls/slick.pager.js"></script>
 <script src="lib/slickgrid/slick.dataview.js"></script>
 <!-- End SlickGrid -->
@@ -65,11 +66,6 @@ var parcoords = d3.parcoords()("#example")
       bottom: 16
     });
 
-// load csv file and create the chart
-d3.csv('data/nutrients.csv', function(data) {
-  //processData(data);
-});
-
 $.get('data/somatic.graphite.vcf', function (data) {
   var vcf = new VCF(data);
   var samples = vcf.getSamples();
@@ -91,13 +87,14 @@ $.get('data/somatic.graphite.vcf', function (data) {
 });
 
 function processData(data) {
-  //console.log(data);
   // slickgrid needs each data element to have an id
   data.forEach(function(d,i) { d.id = d.id || i; });
 
   parcoords
     .data(data)
     .hideAxis(["name"])
+	.hideAxis(['id'])
+	.hideAxis(['B0'])
     .render()
     .reorderable()
     .brushMode("1D-axes");
@@ -122,6 +119,8 @@ function processData(data) {
   var dataView = new Slick.Data.DataView();
   var grid = new Slick.Grid("#grid", dataView, columns, options);
   var pager = new Slick.Controls.Pager(dataView, grid, $("#pager"));
+  //grid.setSelectionModel(new Slick.RowSelectionModel());
+  grid.setSelectionModel(new Slick.RowSelectionModel());
 
   // wire up model events to drive the grid
   dataView.onRowCountChanged.subscribe(function (e, args) {
@@ -159,7 +158,15 @@ function processData(data) {
   grid.onMouseEnter.subscribe(function(e,args) {
     var i = grid.getCellFromEvent(e).row;
     var d = parcoords.brushed() || data;
-    parcoords.highlight([d[i]]);
+	  var highlightedData = [];
+	  var selectedRows = grid.getSelectedRows();
+	  selectedRows.push(i);
+	  console.log(selectedRows);
+	  for (var selectedIndex in selectedRows) {
+		  highlightedData.push(d[selectedIndex]);
+	  }
+	  parcoords.highlight(highlightedData);
+    // parcoords.highlight([d[i]]);
   });
   grid.onMouseLeave.subscribe(function(e,args) {
     parcoords.unhighlight();
