@@ -14,7 +14,7 @@ d3.parcoords = function(config) {
     width: 600,
     height: 300,
     margin: { top: 24, right: 0, bottom: 12, left: 0 },
-    color: "#069",
+	color: "#069",
     composite: "source-over",
     alpha: 0.7,
     bundlingStrength: 0.5,
@@ -211,7 +211,6 @@ d3.parcoords = function(config) {
 	});
 
 	__.hideAxis.forEach(function(k) {
-	  console.log(k);
       yscale[k] = defaultScales[__.types[k]](k);
 	});
 

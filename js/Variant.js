@@ -1,8 +1,14 @@
-var Variant = function (chromosome, position, referenceCount, alternateCounts) {
+var Variant = function (chromosome, position, referenceCount, alternateCounts, depthCount, parsedInfo) {
 	this.chromosome = chromosome;
 	this.position = position;
 	this.referenceCount = referenceCount;
 	this.alternateCounts = alternateCounts;
+	this.depthCount = depthCount;
+	this.parsedInfo = parsedInfo;
+}
+
+Variant.prototype.getDepthCount = function () {
+	return this.depthCount;
 }
 
 Variant.prototype.getAlternateAlleleFrequency = function () {
@@ -23,4 +29,11 @@ Variant.prototype.getMaxAlternateCount = function () {
 		maxAlternateCount = (maxAlternateCount < this.alternateCounts[i]) ? this.alternateCounts[i] : maxAlternateCount;
 	}
 	return maxAlternateCount;
+}
+
+Variant.prototype.getInfo = function (key) {
+	if (key in this.parsedInfo) {
+		return this.parsedInfo[key];
+	}
+	return '';
 }
