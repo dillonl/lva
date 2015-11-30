@@ -1,12 +1,28 @@
-var Variant = function (chromosome, position, referenceCount, alternateCounts, depthCount, parsedInfo) {
+var Variant = function (chromosome, position, info, samples) {
+	this.chromosome = chromosome;
+	this.position = position;
+	this.parsedInfo = info;
+	this.samples = samples;
+}
+
+Variant.prototype.getChromosome = function () { return this.chromosome; }
+Variant.prototype.getPosition = function () { return this.position; }
+Variant.prototype.getAnnotation = function () { return this.parsedInfo.annotation; }
+Variant.prototype.getGeneName = function () { return this.parsedInfo.geneName; }
+Variant.prototype.getSamples = function () { return this.samples; }
+
+/*
+var Variant = function (chromosome, position, referenceCount, alternateCounts, parsedInfo) {
 	this.chromosome = chromosome;
 	this.position = position;
 	this.referenceCount = referenceCount;
 	this.alternateCounts = alternateCounts;
-	this.depthCount = depthCount;
+	var depthCount = 0;
+	$.each(this.alternateCounts, function(i,c) { depthCount += c; });
+	this.depthCount = depthCount + referenceCount;
 	this.parsedInfo = parsedInfo;
 }
-
+*/
 Variant.prototype.getDepthCount = function () {
 	return this.depthCount;
 }
@@ -35,5 +51,5 @@ Variant.prototype.getInfo = function (key) {
 	if (key in this.parsedInfo) {
 		return this.parsedInfo[key];
 	}
-	return '';
+	return '-';
 }

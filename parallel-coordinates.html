@@ -14,10 +14,13 @@
 <script src="lib/slickgrid/plugins/slick.rowselectionmodel.js"></script>
 <script src="lib/slickgrid/controls/slick.pager.js"></script>
 <script src="lib/slickgrid/slick.dataview.js"></script>
+<script type="text/javascript" src="js/filter.js"></script>
+
 <!-- End SlickGrid -->
 
 <link rel="stylesheet" type="text/css" href="css/d3.paracoords.css">
 <link rel="stylesheet" type="text/css" href="css/style.css">
+<link rel="stylesheet" type="text/css" href="css/filter.css">
 <style>
 body, html {
 margin: 0;
@@ -26,7 +29,7 @@ width: 100%;
 overflow: hidden;
 	font-size: 12px;
 }
-#grid, #pager {
+#grid, #pager, #filter {
 position: fixed;
 width: 100%;
 }
@@ -37,6 +40,10 @@ height: 300px;
 #pager {
 bottom: 306px;
 height: 20px;
+}
+#filter {
+bottom: 306px;
+height: 55px;
 }
 .slick-row:hover {
 	font-weight: bold;
@@ -50,8 +57,12 @@ color: #069;
 <script type="text/javascript" src="js/Variant.js"></script>
 <script type="text/javascript" src="js/Sample.js"></script>
 <script type="text/javascript" src="js/VCF.js"></script>
+<script type="text/javascript" src="js/cluster.js"></script>
 
 <div id="example" class="parcoords" style="height:240px;"></div>
-<div id="grid"></div>
-<div id="pager"></div>
+<div id="grid-container">
+	<div id="grid"></div>
+	<div id="pager"></div>
+	<div id="filter"></div>
+</div>
 <script type="text/javascript" src="js/main.js"></script>
