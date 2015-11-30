@@ -22,33 +22,37 @@
 <link rel="stylesheet" type="text/css" href="css/style.css">
 <link rel="stylesheet" type="text/css" href="css/filter.css">
 <style>
-body, html {
-margin: 0;
-height: 100%;
-width: 100%;
-overflow: hidden;
+	body, html {
+	margin: 0;
+	height: 100%;
+	width: 100%;
+	overflow: hidden;
 	font-size: 12px;
-}
-#grid, #pager, #filter {
-position: fixed;
-width: 100%;
-}
-#grid {
-bottom: 0;
-height: 300px;
-}
-#pager {
-bottom: 306px;
-height: 20px;
-}
-#filter {
-bottom: 306px;
-height: 55px;
-}
-.slick-row:hover {
+	}
+	#grid, #pager, #filter, #cluster-manager {
+	position: fixed;
+	width: 100%;
+	}
+	#grid {
+	bottom: 0;
+	height: 300px;
+	}
+	#pager {
+	bottom: 306px;
+	height: 20px;
+	}
+	#filter {
+	bottom: 306px;
+	height: 55px;
+	}
+	#cluster-manager {
+	bottom: 360px;
+	height: 35px;
+	}
+	.slick-row:hover {
 	font-weight: bold;
-color: #069;
- }
+	color: #069;
+	}
 </style>
 <script src="js/d3.min.js"></script>
 <script src="js/d3.paracoords.js"></script>
@@ -64,5 +68,6 @@ color: #069;
 	<div id="grid"></div>
 	<div id="pager"></div>
 	<div id="filter"></div>
+	<div id="cluster-manager"></div>
 </div>
 <script type="text/javascript" src="js/main.js"></script>

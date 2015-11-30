@@ -1,5 +1,7 @@
 var $RowSelectionModel;
 var $CurrentRows;
+var $Clustarmanager
+var $SampleNames = [];
 var parcoords = d3.parcoords()("#example")
 	 .alpha(0.4)
 	 .mode("queue") // progressive rendering
@@ -33,10 +35,13 @@ $.get('data/somatic.graphite.vcf', function (data) {
 	var variants = [];
 	var vcf = new VCF(data);
 	var setRejectList = true;
+	for (var sampleName in vcf.getVariants()[0].getSamples()) {
+		$SampleNames.push(sampleName);
+	}
 	for (var i = 0; i < vcf.getVariants().length; ++i) {
 		var variant = vcf.getVariants()[i];
 		var variantObj = {};
-		variantObj['Chrom'] = variant.getChromosome();
+		variantObj['Chrom'] = variant.getChromosome();parcoords.unhighlight();
 		variantObj['Position'] = variant.getPosition();
 		variantObj['Gene Name'] = variant.getGeneName();
 		variantObj['Annotation'] = variant.getAnnotation();
@@ -95,6 +100,7 @@ function processData(data) {
 	var grid = new Slick.Grid("#grid", dataView, columns, options);
 	var pager = new Slick.Controls.Pager(dataView, grid, $("#pager"));
 	var filter = new Slick.Controls.SlickGridFilter(dataView, grid, $('#filter'), data);
+	$ClusterManager = new SlickGridCluster(dataView, grid, $('#cluster-manager'), data);
 	$RowSelectionModel = new Slick.RowSelectionModel();
 	grid.setSelectionModel($RowSelectionModel);
 
@@ -132,9 +138,6 @@ function processData(data) {
 
 	// highlight row in chart
 	grid.onMouseEnter.subscribe(function(e,args) {
-			// parcoords.unhighlight();
-			// var i = grid.getCellFromEvent(e).row;
-		    // highlightSelectedData(args.grid.getData().getItems()[i].id);
 		var highlightedData = [];
 		var gridData = args.grid.getData().getItems();
 		for (var j = 0; j < $RowSelectionModel.getSelectedRows().length; ++j) {
@@ -148,17 +151,20 @@ function processData(data) {
 			if ($RowSelectionModel.getSelectedRows().length == 0) {
 				parcoords.unhighlight();
 			}
-			else {
-				// highlightSelectedData();
-			}
 		});
 	grid.onSelectedRowsChanged.subscribe(function(e, args) {
 		var highlightedData = [];
 		var gridData = args.grid.getData().getItems();
 		for (var j = 0; j < $RowSelectionModel.getSelectedRows().length; ++j) {
-			highlightedData.push(gridData[$RowSelectionModel.getSelectedRows()[j]]);
+			highlightedData.push(gridData[$RowSelectionModel.getSelectedRows()[j]]);parcoords.unhighlight();
 		}
 		parcoords.highlight(highlightedData);
+		if (highlightedData.length > 0) {
+			$('.filter-buttons').removeAttr("disabled");
+		}
+		else {
+			$('.filter-buttons').attr('disabled', true);
+		}
 		});
 
 	// fill grid with data

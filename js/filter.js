@@ -19,39 +19,69 @@
 			$(getSelector(geneName.sort(), "subclone-filter-gene-name", "Gene Name")).appendTo($container);
 			$(getSelector(annotation.sort(), "subclone-filter-annotation", "Annotation")).appendTo($container);
 
-			$('<input type="checkbox" id="select-all-toggle" /><label for="select-all-toggle">Select All</label>').appendTo($container);
-
-			$('<button id="create-cluster">Create Cluster</button>').appendTo($container);
+			$('<button id="select-all-button">Select All</button>').appendTo($container);
+			$('<button id="invert-selection-button" class="filter-buttons" disabled>Invert Selection</button>').appendTo($container);
+			$('<button id="delete-selection-button" class="filter-buttons" disabled>Delete Selection</button>').appendTo($container);
+			$('<button id="create-cluster-button" class="filter-buttons" disabled>Create Cluster</button>').appendTo($container);
 
 			$('#subclone-filter-chromosome').change(updateFilteredData);
 			$('#subclone-filter-gene-name').change(updateFilteredData);
 			$('#subclone-filter-annotation').change(updateFilteredData);
-			$('#select-all-toggle').change(toggleSelection);
-			$('#create-cluster').click(createCluster);
+			$('#select-all-button').click(selectAll);
+			$('#create-cluster-button').click(createCluster);
+			$('#invert-selection-button').click(invertSelection);
+			$('#delete-selection-button').click(deleteSelection);
 			$container.children().wrapAll("<div class='subclone-filter' />");
 
 		}
 		init(data);
 	}
 
-	function toggleSelection(event) {
-		if ($('#select-all-toggle').is(":checked")) {
-			var highlightedData = [];
-			for (var i = 0; i < $grid.getData().getItems().length; ++i) {
+	function invertSelection() {
+		console.log('started');
+		var highlightedData = [];
+		var selectedRows = $RowSelectionModel.getSelectedRows();
+		var gridItems = $grid.getData().getItems();
+		var tmpData = {};
+		for (var i = 0; i < gridItems.length; ++i) {
+			if (selectedRows.indexOf(i) < 0) {
 				highlightedData.push(i);
 			}
-			$RowSelectionModel.setSelectedRows(highlightedData);
-			// parcoords.highlight($filteredData);
-			// $RowSelectionModel.setSelectedRows($filteredData);
-			// for (var i = 0; i < $CurrentData.length; ++i) { indices.push($CurrentData[i].id); }
-			// $RowSelectionModel.setSelectedRows($CurrentRows);
-			console.log('checked', $grid.getData().getItems());
 		}
-		else {
-			$RowSelectionModel.setSelectedRows([]);
-			parcoords.unhighlight();
-			// console.log('unchecked');
+		$RowSelectionModel.setSelectedRows(highlightedData);
+		if (highlightedData.length == 0) { parcoords.unhighlight(); }
+	}
+
+	function deleteSelection() {
+		var sparedData = [];
+		var selectedRows = $RowSelectionModel.getSelectedRows();
+		var gridItems = $grid.getData().getItems();
+		var tmpData = {};
+		for (var i = 0; i < selectedRows.length; ++i) {
+			var gridItem = gridItems[selectedRows[i]];
+			tmpData[gridItem.id] = true;
 		}
+		for (var i = 0; i < $data.length; ++i) {
+			if (!tmpData[$data[i].id]) {
+				sparedData.push($data[i]);
+			}
+		}
+		$data = sparedData;
+		$filteredData = $data;
+		$dataView.beginUpdate();
+		$dataView.setItems($data);
+		$dataView.endUpdate();
+		parcoords.data($data).render();
+		$RowSelectionModel.setSelectedRows([]);
+		parcoords.unhighlight();
+	}
+
+	function selectAll() {
+		var highlightedData = [];
+		for (var i = 0; i < $grid.getData().getItems().length; ++i) {
+			highlightedData.push(i);
+		}
+		$RowSelectionModel.setSelectedRows(highlightedData);
 	}
 
 	function updateFilteredData(event) {
@@ -109,12 +139,17 @@
 			clusterItems.push(gridItems[selectedRows[i]]);
 		}
 		var cluster = new Cluster(clusterItems);
-		ClusterManager.addCluster(cluster);
+		$ClusterManager.addCluster(cluster);
+		console.log('cluster', clusterItems);
+		parcoords.highlight(clusterItems);
+		/*
 		$dataView.beginUpdate();
 		$dataView.setItems(clusterItems);
 		$dataView.endUpdate();
 		parcoords.data(clusterItems).render();
+		$RowSelectionModel.setSelectedRows([]);
 		parcoords.unhighlight();
+		*/
 	}
 
 	$.extend(true, window, { Slick:{ Controls:{ SlickGridFilter:SlickGridFilter }}});
