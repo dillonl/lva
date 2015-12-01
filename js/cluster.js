@@ -20,7 +20,7 @@ function Cluster(gridObjects) {
 		gridObjects[i].ClusterID = clusterID;
 		for (var j = 0; j < $SampleNames.length; ++j) {
 			var sampleName = $SampleNames[j];
-			console.log(sampleName, parseFloat(gridObjects[i][sampleName]));
+			// console.log(sampleName, parseFloat(gridObjects[i][sampleName]));
 			if (!this.averages[sampleName + "AF"]) {
 				this.averages[sampleName + "AF"] = 0;
 			}
@@ -38,8 +38,10 @@ function Cluster(gridObjects) {
 	$('#clusters-container').append(createClusterHtml(this));
 }
 
+Cluster.prototype.getData = function () { return this.gridObjects; }
+
 function createClusterHtml(cluster) {
-	var html = '<span class="cluster-item">';
+	var html = '<span id="cluster-' + cluster.clusterID + '" class="cluster-item" onmouseover="mouseOverCluster('+cluster.clusterID+')" onmouseout="mouseOutCluster()">';
 	html += '<span class="cluster-header">Variants Count: ' + cluster.gridObjects.length + '</span>';
 	/*
 	html += '<ul>';
@@ -53,15 +55,40 @@ function createClusterHtml(cluster) {
 	return html;
 }
 
+function mouseOutCluster() {
+	parcoords.unhighlight();
+}
+
+function mouseOverCluster(clusterID) {
+	console.log(clusterID);
+	var clusters = $ClusterManager.getClusters();
+	var cluster = undefined;
+	for (var i = 0; i < clusters.length; ++i) {
+		if (clusters[i].clusterID == clusterID) {
+			cluster = clusters[i];
+			break;
+		}
+	}
+	parcoords.highlight(cluster.getData());
+}
+
 function SlickGridCluster(dataView, grid, $container, data) {
 	// $('#grid-container').append('<div id="clusters"></div>');
 	this.clusters = {};
 	$('<span class="clusters-header">Clusters</span><span id="clusters-container"></span>').appendTo($container);
 	$container.children().wrapAll("<div class='subclone-clusters' />");
+	// $('.cluster-item').mouseenter(mouseoverCluster);
+	console.log('registered');
+	$('.cluster-item').mouseenter(function () { console.log('asdf'); });
 }
 
 SlickGridCluster.prototype.addCluster = function (cluster) {
 	this.clusters[cluster.clusterID] = cluster;
+	parcoords.render();
+	setTimeout(function () {
+		$RowSelectionModel.setSelectedRows([]);
+		parcoords.unhighlight();
+	}, 100);
 }
 
 SlickGridCluster.prototype.removeCluster = function (clusterID) {

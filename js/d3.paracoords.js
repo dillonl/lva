@@ -1586,7 +1586,21 @@ d3.renderQueue = (function(func) {
   _i = 0;                       // current iteration
 
   var rq = function(data) {
-    if (data) rq.data(data);
+	  var sortedData = [];
+	  var clusteredData = [];
+	  for (var i = 0; i < data.length; ++i) {
+		  if (data[i].ClusterID == -1) {
+			  sortedData.push(data[i]);
+		  }
+		  else {
+			  clusteredData.push(data[i]);
+		  }
+	  }
+	  for (var i = 0; i < clusteredData.length; ++i) {
+		  sortedData.push(clusteredData[i]);
+	  }
+      // if (data) rq.data(data);
+	  if (sortedData) rq.data(sortedData);
     rq.invalidate();
     _clear();
     rq.render();

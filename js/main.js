@@ -2,6 +2,7 @@ var $RowSelectionModel;
 var $CurrentRows;
 var $Clustarmanager
 var $SampleNames = [];
+
 var parcoords = d3.parcoords()("#example")
 	 .alpha(0.4)
 	 .mode("queue") // progressive rendering
@@ -17,10 +18,12 @@ parcoords.color(function (item) {
 	return item.Color;
 });
 
+/*
 parcoords.alpha(function (item) {
 	return 0;
 });
 
+*/
 function pastelColors(){
     var r = (Math.round(Math.random()* 127) + 127);
     var g = (Math.round(Math.random()* 127) + 127);
@@ -30,10 +33,11 @@ function pastelColors(){
     return 'rgba(' + r + "," + g + "," + b + "," + 255 + ")";
 }
 
-var axisRejectList = ["id", "name", "Chrom", "Position", "Gene Name", "Annotation", "B0", "Color"];
+var axisRejectList = ["id", "name", "Chrom", "Position", "Gene Name", "Annotation", "B0", "Color", "ClusterID"];
 $.get('data/somatic.graphite.vcf', function (data) {
 	var variants = [];
 	var vcf = new VCF(data);
+	$DataManager.setVCF(vcf);
 	var setRejectList = true;
 	for (var sampleName in vcf.getVariants()[0].getSamples()) {
 		$SampleNames.push(sampleName);
@@ -46,6 +50,7 @@ $.get('data/somatic.graphite.vcf', function (data) {
 		variantObj['Gene Name'] = variant.getGeneName();
 		variantObj['Annotation'] = variant.getAnnotation();
 		variantObj['Color'] = standardColor;
+		variantObj['ClusterID'] = -1;
 		var samples = variant.getSamples();
 		for (var sampleName in samples) {
 			if (setRejectList) {
@@ -61,12 +66,14 @@ $.get('data/somatic.graphite.vcf', function (data) {
 		setRejectList = false;
 		variants.push(variantObj);
 	}
+	variants.forEach(function(d,i) { d.id = d.id || i; });
+	$DataManager.setAllGridData(variants);
 	processData(variants);
 });
 
 function processData(data) {
 	// slickgrid needs each data element to have an id
-	data.forEach(function(d,i) { d.id = d.id || i; });
+	// data.forEach(function(d,i) { d.id = d.id || i; });
 
 	parcoords
 		.data(data)

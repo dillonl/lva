@@ -3,6 +3,8 @@ var VariantIndices = {'chrom': 0, 'pos': 1, 'info': 7};
 function VCF(vcf) {
 	this.samples = {};
 	this.variants = [];
+	this.vcfHeader = [];
+	this.vcfLines = [];
 	this.parseVCF(vcf);
 }
 
@@ -15,6 +17,7 @@ VCF.prototype.parseVCF = function (vcf) {
 	for (var i = 0; i < vcfLines.length; ++i) {
 		var line = vcfLines[i];
 		if (line.charAt(0) == '#') {
+			this.vcfHeader.push(line);
 			if (line.slice(0, 6) == "#CHROM") {
 				var headerSections = line.split('\t');
 				for (var j = 0; j < headerSections.length; ++j) {
@@ -25,6 +28,7 @@ VCF.prototype.parseVCF = function (vcf) {
 			}
 		}
 		else {
+			this.vcfLines.push(line);
 			var variant = this.parseVariant(line, sampleIndices);
 			if (!variant || line.length == 0) { continue; }
 			this.variants.push(variant);
