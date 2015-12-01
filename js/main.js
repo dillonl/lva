@@ -182,7 +182,7 @@ function processData(data) {
 			gridUpdate(d);
 		});
 	// parcoords.width($(window).width() * 0.9);
-	// parcoords.height(600);
+	parcoords.height(document.body.clientHeight - 400);
 
 	function gridUpdate(data) {
 		dataView.beginUpdate();
