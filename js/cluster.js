@@ -1,4 +1,4 @@
-var clusterID = 0;
+var clusterID = 1;
 var presetColors = [
 	'rgba(164,202,209,255)',
 	'rgba(219,186,202,255)',
@@ -31,7 +31,6 @@ function Cluster(gridObjects) {
 
 	for (var j = 0; j < $SampleNames.length; ++j) {
 		var sampleName = $SampleNames[j];
-		console.log(this.averages[sampleName + "AF"]);
 		this.averages[sampleName + "AF"] = this.averages[sampleName + "AF"] / parseFloat(gridObjects.length);
 	}
 	this.clusterID = clusterID++;
@@ -40,13 +39,17 @@ function Cluster(gridObjects) {
 }
 
 function createClusterHtml(cluster) {
-	var html = '<span>' + cluster.gridObjects.length + '</span>';
+	var html = '<span class="cluster-item">';
+	html += '<span class="cluster-header">Variants Count: ' + cluster.gridObjects.length + '</span>';
+	/*
 	html += '<ul>';
 	for (var j = 0; j < $SampleNames.length; ++j) {
 		var sampleName = $SampleNames[j];
 		html += "<li>" + sampleName + ": " + cluster.averages[sampleName + "AF"] + "</li>";
 	}
 	html += '</ul>'
+	*/
+	html += "</span>";
 	return html;
 }
 
