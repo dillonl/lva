@@ -63,16 +63,14 @@ input {
   /* vertical-align: middle; */
 }
 .cluster-item {
-  /* display: inline-block; */
   cursor: pointer;
   padding: 3px;
   background-color: #eee;
   height: 30px;
   margin-left: 10px;
-  /* margin-top: 5px; */
+  border: 1px solid #000;
 }
-.cluster-item :hover {
-  padding: 0px;
+.cluster-item:hover {
   background-color: #aeaeae;
 }
 .cluster-header {

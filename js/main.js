@@ -6,7 +6,7 @@ var $SampleNames = [];
 var parcoords = d3.parcoords()("#example")
 	 .alpha(0.4)
 	 .mode("queue") // progressive rendering
-	 .height(d3.max([document.body.clientHeight-326, 220]))
+	 .height(document.body.clientHeight - 400)
 	 .margin({
 		 top: 36,
 		 left: 0,
@@ -182,7 +182,6 @@ function processData(data) {
 			gridUpdate(d);
 		});
 	// parcoords.width($(window).width() * 0.9);
-	parcoords.height(document.body.clientHeight - 400);
 
 	function gridUpdate(data) {
 		dataView.beginUpdate();

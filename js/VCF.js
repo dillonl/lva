@@ -9,6 +9,8 @@ function VCF(vcf) {
 }
 
 VCF.prototype.getVariants = function () { return this.variants; }
+VCF.prototype.getHeader = function () { return this.vcfHeader; }
+VCF.prototype.getLines = function () { return this.vcfLines; }
 
 //'Allele | Annotation | Annotation_Impact | Gene_Name | Gene_ID | Feature_Type | Feature_ID | Transcript_BioType | Rank | HGVS.c | HGVS.p | cDNA.pos / cDNA.length | CDS.pos / CDS.length | AA.pos / AA.length | Distance | ERRORS / WARNINGS / INFO'
 VCF.prototype.parseVCF = function (vcf) {

@@ -40,8 +40,31 @@ function Cluster(gridObjects) {
 
 Cluster.prototype.getData = function () { return this.gridObjects; }
 
+function saveCluster(clusterID) {
+	var vcfFile = $DataManager.getVCF();
+	var header = vcfFile.getHeader();
+	var lines = vcfFile.getLines();
+	var vcf = "";
+	for (var i = 0; i < header.length; ++i) {
+		vcf += header[i] + "\n";
+	}
+	var clusters = $ClusterManager.getClusters();
+	var cluster = undefined;
+	for (var i = 0; i < clusters.length; ++i) {
+		if (clusters[i].clusterID == clusterID) {
+			cluster = clusters[i];
+			break;
+		}
+	}
+	for (var i = 0; i < cluster.gridObjects.length; ++i) {
+		vcf += lines[cluster.gridObjects[i].id] + "\n";
+	}
+	var blob = new Blob([vcf], {type: "text/plain;charset=utf-8"});
+	saveAs(blob, "cluster.vcf");
+}
+
 function createClusterHtml(cluster) {
-	var html = '<span id="cluster-' + cluster.clusterID + '" class="cluster-item" onmouseover="mouseOverCluster('+cluster.clusterID+')" onmouseout="mouseOutCluster()">';
+	var html = '<span id="cluster-' + cluster.clusterID + '" class="cluster-item" onmouseover="mouseOverCluster('+cluster.clusterID+')" onmouseout="mouseOutCluster()" onclick="saveCluster('+cluster.clusterID+')" >';
 	html += '<span class="cluster-header">Variants Count: ' + cluster.gridObjects.length + '</span>';
 	/*
 	html += '<ul>';
@@ -60,7 +83,6 @@ function mouseOutCluster() {
 }
 
 function mouseOverCluster(clusterID) {
-	console.log(clusterID);
 	var clusters = $ClusterManager.getClusters();
 	var cluster = undefined;
 	for (var i = 0; i < clusters.length; ++i) {
