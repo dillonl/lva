@@ -22,13 +22,11 @@
 			$('<button id="select-all-button">Select All</button>').appendTo($container);
 			$('<button id="invert-selection-button" class="filter-buttons" disabled>Invert Selection</button>').appendTo($container);
 			$('<button id="delete-selection-button" class="filter-buttons" disabled>Delete Selection</button>').appendTo($container);
-			$('<button id="create-cluster-button" class="filter-buttons" disabled>Create Cluster</button>').appendTo($container);
 
 			$('#subclone-filter-chromosome').change(updateFilteredData);
 			$('#subclone-filter-gene-name').change(updateFilteredData);
 			$('#subclone-filter-annotation').change(updateFilteredData);
 			$('#select-all-button').click(selectAll);
-			$('#create-cluster-button').click(createCluster);
 			$('#invert-selection-button').click(invertSelection);
 			$('#delete-selection-button').click(deleteSelection);
 			$container.children().wrapAll("<div class='subclone-filter' />");
@@ -38,7 +36,6 @@
 	}
 
 	function invertSelection() {
-		console.log('started');
 		var highlightedData = [];
 		var selectedRows = $RowSelectionModel.getSelectedRows();
 		var gridItems = $grid.getData().getItems();
@@ -68,12 +65,14 @@
 		}
 		$data = sparedData;
 		$filteredData = $data;
+		$DataManager.setAllGridData($data);
 		$dataView.beginUpdate();
 		$dataView.setItems($data);
 		$dataView.endUpdate();
-		parcoords.data($data).render();
 		$RowSelectionModel.setSelectedRows([]);
 		parcoords.unhighlight();
+		updateFilteredData();
+		parcoords.brushReset();
 	}
 
 	function selectAll() {
@@ -129,27 +128,6 @@
 		});
 		selector += '</select>';
 		return selector
-	}
-
-	function createCluster(event) {
-		var clusterItems = [];
-		var gridItems = $grid.getData().getItems();
-		var selectedRows = $RowSelectionModel.getSelectedRows();
-		for (var i = 0; i < selectedRows.length; ++i) {
-			clusterItems.push(gridItems[selectedRows[i]]);
-		}
-		var cluster = new Cluster(clusterItems);
-		$ClusterManager.addCluster(cluster);
-		console.log('cluster', clusterItems);
-		parcoords.highlight(clusterItems);
-		/*
-		$dataView.beginUpdate();
-		$dataView.setItems(clusterItems);
-		$dataView.endUpdate();
-		parcoords.data(clusterItems).render();
-		$RowSelectionModel.setSelectedRows([]);
-		parcoords.unhighlight();
-		*/
 	}
 
 	$.extend(true, window, { Slick:{ Controls:{ SlickGridFilter:SlickGridFilter }}});

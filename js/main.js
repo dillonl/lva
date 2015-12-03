@@ -6,40 +6,36 @@ var $SampleNames = [];
 var parcoords = d3.parcoords()("#example")
 	 .alpha(0.4)
 	 .mode("queue") // progressive rendering
-	 .height(document.body.clientHeight - 400)
+	 .height(document.body.clientHeight - 470) // reduces the size of the parcoords plot, because the title bar and the grid take up so much room
 	 .margin({
 		 top: 36,
 		 left: 0,
 		 right: 0,
 		 bottom: 16
 		 });
-var standardColor = '#069';
+var standardColor = '#069'; // this is the default color for the parallel-coordinates plot
+// renders each item's color
 parcoords.color(function (item) {
 	return item.Color;
 });
 
-/*
-parcoords.alpha(function (item) {
-	return 0;
-});
-
-*/
+// randomly generates colors
 function pastelColors(){
     var r = (Math.round(Math.random()* 127) + 127);
     var g = (Math.round(Math.random()* 127) + 127);
     var b = (Math.round(Math.random()* 127) + 127);
-	// rgba(0,200,0,0.3)
-	console.log('rgba(' + r + "," + g + "," + b + "," + 255 + ")");
     return 'rgba(' + r + "," + g + "," + b + "," + 255 + ")";
 }
 
+// this is the list of variant parameters that the parcoords plot should ignore.
 var axisRejectList = ["id", "name", "Chrom", "Position", "Gene Name", "Annotation", "B0", "Color", "ClusterID"];
+// get the VCF data, in the future the VCF will be loaded by the user but for now we just load the default data set.
 $.get('data/somatic.graphite.vcf', function (data) {
 	var variants = [];
 	var vcf = new VCF(data);
-	$DataManager.setVCF(vcf);
+	$DataManager.setVCF(vcf); // register the vcf with the datamanager, keeps track of the vcf lines so clusters can be printed out to file
 	var setRejectList = true;
-	for (var sampleName in vcf.getVariants()[0].getSamples()) {
+	for (var sampleName in vcf.getVariants()[0].getSamples()) { // populate all the sample names
 		$SampleNames.push(sampleName);
 	}
 	for (var i = 0; i < vcf.getVariants().length; ++i) {
@@ -68,6 +64,8 @@ $.get('data/somatic.graphite.vcf', function (data) {
 	}
 	variants.forEach(function(d,i) { d.id = d.id || i; });
 	$DataManager.setAllGridData(variants);
+
+	$('#load-data-button').removeAttr('disabled');
 	processData(variants);
 });
 
@@ -163,7 +161,8 @@ function processData(data) {
 		var highlightedData = [];
 		var gridData = args.grid.getData().getItems();
 		for (var j = 0; j < $RowSelectionModel.getSelectedRows().length; ++j) {
-			highlightedData.push(gridData[$RowSelectionModel.getSelectedRows()[j]]);parcoords.unhighlight();
+			highlightedData.push(gridData[$RowSelectionModel.getSelectedRows()[j]]);
+			parcoords.unhighlight();
 		}
 		parcoords.highlight(highlightedData);
 		if (highlightedData.length > 0) {

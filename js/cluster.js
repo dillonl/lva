@@ -1,10 +1,10 @@
 var clusterID = 1;
 var presetColors = [
-	'rgba(164,202,209,255)',
-	'rgba(219,186,202,255)',
-	'rgba(200,158,141,255)',
+	'rgba(127,191,123,255)',
+	'rgba(239,138,98,255)',
+	'rgba(175,141,195,255)',
 	'rgba(200,132,203,255)',
-	'rgba(131,138,196,255)',
+	'rgba(216,179,101,255)',
 	'rgba(244,154,223,255)',
 	'rgba(237,171,145,255)',
 	'rgba(182,228,160,255)',
@@ -13,7 +13,7 @@ var presetColors = [
 	'rgba(150,235,174,255)'
 ];
 function Cluster(gridObjects) {
-	this.color = (clusterID < presetColors.length) ? presetColors[clusterID] : pastelColors(); // the first 10 can use preset but after that just randomly generate one
+	this.color = ((clusterID - 1) < presetColors.length) ? presetColors[clusterID - 1] : pastelColors(); // the first 10 can use preset but after that just randomly generate one
 	this.averages = {};
 	for (var i = 0; i < gridObjects.length; ++i) {
 		gridObjects[i].Color = this.color;
@@ -27,7 +27,6 @@ function Cluster(gridObjects) {
 			this.averages[sampleName + "AF"] += parseFloat(gridObjects[i][sampleName]);
 		}
 	}
-	// console.log(gridObjects);
 
 	for (var j = 0; j < $SampleNames.length; ++j) {
 		var sampleName = $SampleNames[j];
@@ -41,6 +40,8 @@ function Cluster(gridObjects) {
 Cluster.prototype.getData = function () { return this.gridObjects; }
 
 function saveCluster(clusterID) {
+	var fileName = prompt("Enter the filename", "");
+	if (fileName == null) { return; }
 	var vcfFile = $DataManager.getVCF();
 	var header = vcfFile.getHeader();
 	var lines = vcfFile.getLines();
@@ -60,11 +61,35 @@ function saveCluster(clusterID) {
 		vcf += lines[cluster.gridObjects[i].id] + "\n";
 	}
 	var blob = new Blob([vcf], {type: "text/plain;charset=utf-8"});
-	saveAs(blob, "cluster.vcf");
+	fileName = (fileName.endsWith(".vcf")) ? fileName : fileName + ".vcf";
+	saveAs(blob, fileName);
+}
+
+function selectCluster(hold, clusterID) {
+	var selectedItems = [];
+	var selectedIndices = [];
+	var currentlySelectedItems = $RowSelectionModel.getSelectedRows();
+	for (var i = 0; i < currentlySelectedItems.length; ++i) {
+		selectedIndices.push(currentlySelectedItems[i]);
+	}
+	for (var i = 0; i < $DataManager.getAllGridData().length; ++i) {
+		if (currentlySelectedItems.indexOf($DataManager.getAllGridData()[i].id) >= 0) {
+			selectedItems.push($DataManager.getAllGridData()[i]);
+		}
+	}
+	var clusters = $ClusterManager.getClusters();
+	for (var i = 0; i < clusters.length; ++i) {
+		for (var j = 0; j < clusters[i].getData().length; ++j) {
+			selectedItems.push(clusters[i].gridObjects[j]);
+			selectedIndices.push(clusters[i].gridObjects[j].id);
+		}
+	}
+	$RowSelectionModel.setSelectedRows(selectedIndices);
+	parcoords.highlight(selectedItems);
 }
 
 function createClusterHtml(cluster) {
-	var html = '<span id="cluster-' + cluster.clusterID + '" class="cluster-item" onmouseover="mouseOverCluster('+cluster.clusterID+')" onmouseout="mouseOutCluster()" onclick="saveCluster('+cluster.clusterID+')" >';
+	var html = '<span id="cluster-' + cluster.clusterID + '" class="cluster-item" onmouseover="mouseOverCluster('+cluster.clusterID+')" onmouseout="mouseOutCluster()" onclick="selectCluster(event.shiftKey, '+cluster.clusterID+')" >';
 	html += '<span class="cluster-header">Variants Count: ' + cluster.gridObjects.length + '</span>';
 	/*
 	html += '<ul>';
@@ -79,7 +104,7 @@ function createClusterHtml(cluster) {
 }
 
 function mouseOutCluster() {
-	parcoords.unhighlight();
+	// parcoords.unhighlight();
 }
 
 function mouseOverCluster(clusterID) {
@@ -98,10 +123,9 @@ function SlickGridCluster(dataView, grid, $container, data) {
 	// $('#grid-container').append('<div id="clusters"></div>');
 	this.clusters = {};
 	$('<span class="clusters-header">Clusters</span><span id="clusters-container"></span>').appendTo($container);
+	$('<button id="create-cluster-button" class="filter-buttons" disabled>Create Cluster</button>').appendTo($container);
 	$container.children().wrapAll("<div class='subclone-clusters' />");
-	// $('.cluster-item').mouseenter(mouseoverCluster);
-	console.log('registered');
-	$('.cluster-item').mouseenter(function () { console.log('asdf'); });
+	$('#create-cluster-button').click(this.createCluster);
 }
 
 SlickGridCluster.prototype.addCluster = function (cluster) {
@@ -123,4 +147,25 @@ SlickGridCluster.prototype.getClusters = function (clusterID) {
 		clustersData.push(this.clusters[clusterID]);
 	}
 	return clustersData;
+}
+
+SlickGridCluster.prototype.createCluster = function (event) {
+	var clusterItems = [];
+	var gridItems = $grid.getData().getItems();
+	var selectedRows = $RowSelectionModel.getSelectedRows();
+	for (var i = 0; i < selectedRows.length; ++i) {
+		clusterItems.push(gridItems[selectedRows[i]]);
+	}
+	var cluster = new Cluster(clusterItems);
+	$ClusterManager.addCluster(cluster);
+	console.log('cluster', clusterItems);
+	parcoords.highlight(clusterItems);
+	/*
+	  $dataView.beginUpdate();
+	  $dataView.setItems(clusterItems);
+	  $dataView.endUpdate();
+	  parcoords.data(clusterItems).render();
+	  $RowSelectionModel.setSelectedRows([]);
+	  parcoords.unhighlight();
+	*/
 }
