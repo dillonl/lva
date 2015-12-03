@@ -20,19 +20,47 @@
 			$(getSelector(annotation.sort(), "subclone-filter-annotation", "Annotation")).appendTo($container);
 
 			$('<button id="select-all-button">Select All</button>').appendTo($container);
+			$('<button id="deselect-all-button">Deselect All</button>').appendTo($container);
 			$('<button id="invert-selection-button" class="filter-buttons" disabled>Invert Selection</button>').appendTo($container);
 			$('<button id="delete-selection-button" class="filter-buttons" disabled>Delete Selection</button>').appendTo($container);
+			$('<button id="save-selected-button" class="filter-buttons" disabled>Export Selected</button>').appendTo($container);
 
 			$('#subclone-filter-chromosome').change(updateFilteredData);
 			$('#subclone-filter-gene-name').change(updateFilteredData);
 			$('#subclone-filter-annotation').change(updateFilteredData);
 			$('#select-all-button').click(selectAll);
-			$('#invert-selection-button').click(invertSelection);
+			$('#deselect-all-button').click(deselectAll);
 			$('#delete-selection-button').click(deleteSelection);
+			$('#save-selected-button').click(saveSelected);
 			$container.children().wrapAll("<div class='subclone-filter' />");
 
 		}
 		init(data);
+	}
+
+	function saveSelected() {
+		var fileName = prompt("Enter the filename", "");
+		if (fileName == null) { return; }
+		var vcfFile = $DataManager.getVCF();
+		var header = vcfFile.getHeader();
+		var lines = vcfFile.getLines();
+		var vcf = "";
+		for (var i = 0; i < header.length; ++i) {
+			vcf += header[i] + "\n";
+		}
+		var currentlySelectedItems = $RowSelectionModel.getSelectedRows();
+
+		currentlySelectedItems.sort();
+		var added = {};
+		for (var i = 0; i < currentlySelectedItems.length; ++i) {
+			if (!added[currentlySelectedItems[i]]) {
+				vcf += lines[currentlySelectedItems[i]] + "\n";
+				added[currentlySelectedItems[i]] = true;
+			}
+		}
+		var blob = new Blob([vcf], {type: "text/plain;charset=utf-8"});
+		fileName = (fileName.endsWith(".vcf")) ? fileName : fileName + ".vcf";
+		saveAs(blob, fileName);
 	}
 
 	function invertSelection() {
@@ -47,6 +75,11 @@
 		}
 		$RowSelectionModel.setSelectedRows(highlightedData);
 		if (highlightedData.length == 0) { parcoords.unhighlight(); }
+	}
+
+	function deselectAll() {
+		$RowSelectionModel.setSelectedRows([]);
+		parcoords.unhighlight();
 	}
 
 	function deleteSelection() {

@@ -33,37 +33,12 @@ function Cluster(gridObjects) {
 		this.averages[sampleName + "AF"] = this.averages[sampleName + "AF"] / parseFloat(gridObjects.length);
 	}
 	this.clusterID = clusterID++;
+	console.log('clusterID', this.clusterID);
 	this.gridObjects = gridObjects;
 	$('#clusters-container').append(createClusterHtml(this));
 }
 
 Cluster.prototype.getData = function () { return this.gridObjects; }
-
-function saveCluster(clusterID) {
-	var fileName = prompt("Enter the filename", "");
-	if (fileName == null) { return; }
-	var vcfFile = $DataManager.getVCF();
-	var header = vcfFile.getHeader();
-	var lines = vcfFile.getLines();
-	var vcf = "";
-	for (var i = 0; i < header.length; ++i) {
-		vcf += header[i] + "\n";
-	}
-	var clusters = $ClusterManager.getClusters();
-	var cluster = undefined;
-	for (var i = 0; i < clusters.length; ++i) {
-		if (clusters[i].clusterID == clusterID) {
-			cluster = clusters[i];
-			break;
-		}
-	}
-	for (var i = 0; i < cluster.gridObjects.length; ++i) {
-		vcf += lines[cluster.gridObjects[i].id] + "\n";
-	}
-	var blob = new Blob([vcf], {type: "text/plain;charset=utf-8"});
-	fileName = (fileName.endsWith(".vcf")) ? fileName : fileName + ".vcf";
-	saveAs(blob, fileName);
-}
 
 function selectCluster(hold, clusterID) {
 	var selectedItems = [];
@@ -75,13 +50,17 @@ function selectCluster(hold, clusterID) {
 	for (var i = 0; i < $DataManager.getAllGridData().length; ++i) {
 		if (currentlySelectedItems.indexOf($DataManager.getAllGridData()[i].id) >= 0) {
 			selectedItems.push($DataManager.getAllGridData()[i]);
+			selectedIndices.push($DataManager.getAllGridData()[i].id);
 		}
 	}
 	var clusters = $ClusterManager.getClusters();
 	for (var i = 0; i < clusters.length; ++i) {
 		for (var j = 0; j < clusters[i].getData().length; ++j) {
-			selectedItems.push(clusters[i].gridObjects[j]);
-			selectedIndices.push(clusters[i].gridObjects[j].id);
+			console.log('clusterid', clusters[i].getData()[j].clusterID);
+			if (hold || clusters[i].getData()[j].clusterID == clusterID) {
+				selectedItems.push(clusters[i].getData()[j]);
+				selectedIndices.push(clusters[i].getData()[j].id);
+			}
 		}
 	}
 	$RowSelectionModel.setSelectedRows(selectedIndices);
