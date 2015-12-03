@@ -16,6 +16,9 @@ var parcoords = d3.parcoords()("#example")
 var standardColor = '#069'; // this is the default color for the parallel-coordinates plot
 // renders each item's color
 parcoords.color(function (item) {
+	if (item == undefined) {
+		console.log(item);
+	}
 	return item.Color;
 });
 

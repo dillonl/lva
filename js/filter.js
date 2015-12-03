@@ -1,7 +1,5 @@
 (function ($) {
 	function SlickGridFilter(dataView, grid, $container, data) {
-		$filteredData = data;
-		$data = data;
 		$dataView = dataView;
 		$grid = grid;
 		function init(data) {
@@ -80,27 +78,30 @@
 	function deselectAll() {
 		$RowSelectionModel.setSelectedRows([]);
 		parcoords.unhighlight();
+		$dataView.beginUpdate();
+		$dataView.setItems($DataManager.getAllGridData());
+		$dataView.endUpdate();
+		parcoords.data($DataManager.getAllGridData()).render();
+		parcoords.brushReset();
 	}
 
 	function deleteSelection() {
 		var sparedData = [];
 		var selectedRows = $RowSelectionModel.getSelectedRows();
 		var gridItems = $grid.getData().getItems();
-		var tmpData = {};
+		var deletedItems = {};
 		for (var i = 0; i < selectedRows.length; ++i) {
 			var gridItem = gridItems[selectedRows[i]];
-			tmpData[gridItem.id] = true;
+			deletedItems[gridItem.id] = true;
 		}
-		for (var i = 0; i < $data.length; ++i) {
-			if (!tmpData[$data[i].id]) {
-				sparedData.push($data[i]);
+		for (var i = 0; i < $DataManager.getAllGridData().length; ++i) {
+			if (!deletedItems[$DataManager.getAllGridData()[i].id]) {
+				sparedData.push($DataManager.getAllGridData()[i]);
 			}
 		}
-		$data = sparedData;
-		$filteredData = $data;
-		$DataManager.setAllGridData($data);
+		$DataManager.setAllGridData(sparedData);
 		$dataView.beginUpdate();
-		$dataView.setItems($data);
+		$dataView.setItems(sparedData);
 		$dataView.endUpdate();
 		$RowSelectionModel.setSelectedRows([]);
 		parcoords.unhighlight();
@@ -117,12 +118,11 @@
 	}
 
 	function updateFilteredData(event) {
-		var tmpData = [];
+		var tmpData = $DataManager.getAllGridData();
 		var filteredData = [];
 		$.each($('select.filter'), function (i, el) {
 			var selectedValue = $(el).val();
-			if (selectedValue == '') { return; }
-			console.log(el);
+			if (selectedValue == '[]') { return; }
 			filteredData = [];
 			for (var i = 0; i < tmpData.length; ++i) {
 				if (tmpData[i][$(el).attr('data')] == selectedValue) {
@@ -131,16 +131,11 @@
 			}
 			tmpData = filteredData;
 		});
-		/*
-		if (tmpData.length == $data.length) {
-			filteredData = $DataManager.getAllGridData();
-		}
-		*/
-		$filteredData = filteredData;
+
 		$dataView.beginUpdate();
-		$dataView.setItems(filteredData);
+		$dataView.setItems(tmpData);
 		$dataView.endUpdate();
-		parcoords.data(filteredData).render();
+		parcoords.data(tmpData).render();
 		$RowSelectionModel.setSelectedRows([]);
 		parcoords.unhighlight();
 	}
@@ -157,7 +152,7 @@
 		return values;
 	}
 	function getSelector(values, id, label) {
-		var selector = '<label for="'+id+'">'+label+'</label><select id="'+id+'" class="filter" data="'+label+'"><option value="">[No Filter]</option>';
+		var selector = '<label for="'+id+'">'+label+'</label><select id="'+id+'" class="filter" data="'+label+'"><option value="[]">[No Filter]</option>';
 		$.each(values, function (i, el) {
 				selector += '<option value="'+el+'">'+el+'</option>';
 		});

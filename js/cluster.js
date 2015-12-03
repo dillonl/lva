@@ -3,7 +3,6 @@ var presetColors = [
 	'rgba(127,191,123,255)',
 	'rgba(239,138,98,255)',
 	'rgba(175,141,195,255)',
-	'rgba(200,132,203,255)',
 	'rgba(216,179,101,255)',
 	'rgba(244,154,223,255)',
 	'rgba(237,171,145,255)',
@@ -45,22 +44,29 @@ function selectCluster(hold, clusterID) {
 	var selectedItems = [];
 	var selectedIndices = [];
 	var currentlySelectedItems = $RowSelectionModel.getSelectedRows();
+
+	// first set the indices of the selected rows so they stay selected
 	for (var i = 0; i < currentlySelectedItems.length; ++i) {
+		var selectedItem = $grid.getData().getItems()[currentlySelectedItems[i]];
 		selectedIndices.push(currentlySelectedItems[i]);
+		selectedItems.push(selectedItem);
 	}
-	for (var i = 0; i < $DataManager.getAllGridData().length; ++i) {
-		if (currentlySelectedItems.indexOf($DataManager.getAllGridData()[i].id) >= 0) {
-			selectedItems.push($DataManager.getAllGridData()[i]);
-			selectedIndices.push($DataManager.getAllGridData()[i].id);
-		}
+
+	// then create a map from item.id to row index so it can be looked up in constant time in the clusters loop below
+	var tmpIDToRowIndex = {};
+	for (var i = 0; i < $grid.getData().getItems().length; ++i) {
+		tmpIDToRowIndex[$grid.getData().getItems()[i].id] = i;
 	}
 	var clusters = $ClusterManager.getClusters();
+
+	// loop through the clusters and add all the cluster items and their row index (using map produced above)
 	for (var i = 0; i < clusters.length; ++i) {
 		for (var j = 0; j < clusters[i].getData().length; ++j) {
 			var item = clusters[i].getData()[j];
 			if (hold || clusters[i].selected || item.ClusterID == clusterID) {
 				selectedItems.push(item);
-				selectedIndices.push(item.id);
+				selectedIndices.push(tmpIDToRowIndex[item.id]);
+				console.log(tmpIDToRowIndex[item.id]);
 				clusters[i].selected = true;
 			}
 		}
@@ -90,7 +96,6 @@ function mouseOverCluster(clusterID) {
 			if (clusters[i].selected || item.ClusterID == clusterID) {
 				selectedItems.push(item);
 				selectedIndices.push(item.id);
-				// clusters[i].selected = true;
 			}
 		}
 	}
@@ -174,12 +179,4 @@ SlickGridCluster.prototype.createCluster = function (event) {
 	var cluster = new Cluster(clusterItems);
 	$ClusterManager.addCluster(cluster);
 	parcoords.highlight(clusterItems);
-	/*
-	  $dataView.beginUpdate();
-	  $dataView.setItems(clusterItems);
-	  $dataView.endUpdate();
-	  parcoords.data(clusterItems).render();
-	  $RowSelectionModel.setSelectedRows([]);
-	  parcoords.unhighlight();
-	*/
 }
