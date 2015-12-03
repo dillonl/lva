@@ -117,12 +117,12 @@
 	}
 
 	function updateFilteredData(event) {
-		$('#select-all-toggle').attr('checked', false);
-		var tmpData = $data;
+		var tmpData = [];
 		var filteredData = [];
 		$.each($('select.filter'), function (i, el) {
 			var selectedValue = $(el).val();
 			if (selectedValue == '') { return; }
+			console.log(el);
 			filteredData = [];
 			for (var i = 0; i < tmpData.length; ++i) {
 				if (tmpData[i][$(el).attr('data')] == selectedValue) {
@@ -131,9 +131,11 @@
 			}
 			tmpData = filteredData;
 		});
+		/*
 		if (tmpData.length == $data.length) {
-			filteredData = $data;
+			filteredData = $DataManager.getAllGridData();
 		}
+		*/
 		$filteredData = filteredData;
 		$dataView.beginUpdate();
 		$dataView.setItems(filteredData);
