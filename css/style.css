@@ -1,36 +1,135 @@
 body {
-	padding-top: 50px;
+  font-size: 14px;
+  font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+  margin: 24px;
+  background: #fcfcfc;
+  line-height: 1.45em;
 }
-svg {
-    background: whitesmoke;
-    border: thin black solid;
-	margin-left: 50px;
+nav {
+  background-color: #333;
+  margin: 0;
+  overflow: hidden;
+  text-align: center;
+  font-size: 20px;
+}
+nav ul{
+    margin: 0;
+    padding: 0;
+}
+nav ul li {
+    /* This allow us to arrange list items in a row, without using float */
+    display: inline-block;
+    list-style-type: none;
 }
 
-.poly {
-    stroke: steelblue;
-    stroke-width: 2px;
+/* Create a style for the first level items */
+nav > ul > li > a {
+    color: #aaa;
+    /* background-color:#FF0; */
+    display: inline-block;
+    line-height: 2em;
+    padding: 0.5em 0.5em;
+    text-decoration: none;
 }
-.title-template {
-	padding: 40px 15px;
-	text-align: center;
+a {
+  color: #555;
 }
-#allele-selectors {
-	width: 80%;
-	display: block;
-	margin-left: auto;
-	margin-right: auto;
+a:hover {
+  color: #000;
 }
-.sample-entry-container {
-	display: inline-block;
-	height: 200px;
+ul {
+  margin: 0 20px;
+  padding: 0;
 }
-.sample-entry-title {
-	position: absolute;
-	margin-left: 12px;
+.dark {
+  background: #222;
 }
-.sample-entry {
-	margin: 20px 10px; 10px; 10px;;
-	display: inline-block;
-	height: 300px;
+p {
+  width: 560px;
+}
+pre {
+  color: #444;
+  font-family: Ubuntu Mono, Monaco, monospace;
+  padding: 4px 8px;
+  background: #f2f2f2;
+  border: 1px solid #ccc;
+}
+h1 small {
+  font-weight: normal;
+  font-size: 0.5em;
+}
+h3 {
+  margin-top: 40px;
+}
+.float {
+  float: left;
+}
+.centered {
+  text-align: center;
+}
+.hide {
+  display: none;
+}
+input {
+  font-size: 16px;
+}
+
+/* Cluster */
+
+.subclone-clusters {
+  width: 100%;
+  height: 40px;
+  border-top: 1px solid gray;
+  border-bottom: 1px solid gray;
+  /* border-top: 0; */
+  /* vertical-align: middle; */
+  background-color: #ccc;
+}
+.clusters-header {
+  font-size: 20px;
+  padding: 10px 5px 0px 20px;
+  display: inline-block;
+  /* vertical-align: middle; */
+}
+.cluster-item {
+  cursor: pointer;
+  padding: 3px;
+  background-color: #eee;
+  height: 30px;
+  margin-left: 10px;
+  border: 1px solid #000;
+}
+.cluster-item:hover {
+  background-color: #aeaeae;
+}
+.cluster-header {
+  font-size: 10px;
+}
+.cluster-item ul {
+  line-height: 1em;
+  margin: 0;
+}
+.cluster-item li {
+  padding: 0;
+}
+
+#create-cluster-button {
+  float: right;
+  margin: 10px 20px 0px 0px;
+}
+
+/* Filter */
+.subclone-filter {
+  width: 100%;
+  height: 34px;
+  border-bottom: 1px solid gray;
+  border-top: 0;
+  background-color: #ccc;
+}
+
+.subclone-filter button, .subclone-filter label {
+  margin: 0px 5px 0px 10px;
+}
+.subclone-filter button, .subclone-filter label, .subclone-filter select {
+  margin-top: 8px;
 }

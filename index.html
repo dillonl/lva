@@ -5,8 +5,8 @@
 		<!-- Template derived from https://getbootstrap.com/examples/starter-template/ -->
 		<link rel="stylesheet" type="text/css" href="css/style.css">
 		<link rel="stylesheet" type="text/css" href="css/nouislider.min.css">
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" crossorigin="anonymous">
+		<link rel="stylesheet" href="css/bootstrap.min.css">
+		<link rel="stylesheet" href="css/bootstrap-theme.min.css">
 	</head>
 	<script type="text/javascript">
 		
@@ -43,15 +43,18 @@
 		<script id="sample-template" type="text/x-handlebars-template">
 			<div class="sample-entry-container">
 				<span class="sample-entry-title">{{sampleName}}</span>
+				<span id="{{sampleName}}-min"></span>/<span id="{{sampleName}}-max"></span>
 				<div id="{{sampleName}}-slider" class="sample-entry">
+				</div>
+				<div id="{{sampleName}}-plot" class="plots">
 				</div>
 			</div>
 		</script>
 
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
-		<script type="text/javascript" src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.4/handlebars.min.js"></script>
+		<script type="text/javascript" src="js/jquery.min.js"></script>
+		<script type="text/javascript" src="js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="js/d3.min.js" charset="utf-8"></script>
+		<script type="text/javascript" src="js/handlebars.min.js"></script>
 		<script type="text/javascript" src="js/nouislider.min.js"></script>
 		<script type="text/javascript" src="js/Variant.js"></script>
 		<script type="text/javascript" src="js/Sample.js"></script>

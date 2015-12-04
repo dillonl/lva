@@ -1,0 +1,78 @@
+
+<!doctype html>
+<title>Subclone Analysis Tool</title>
+
+<!-- SlickGrid -->
+<link rel="stylesheet" href="lib/slickgrid/slick.grid.css" type="text/css"/>
+<link rel="stylesheet" href="lib/slickgrid/jquery-ui-1.8.16.custom.css" type="text/css"/>
+<link rel="stylesheet" href="lib/slickgrid/examples.css" type="text/css"/>
+<link rel="stylesheet" href="lib/slickgrid/slick.pager.css" type="text/css"/>
+<script src="lib/slickgrid/lib/jquery-1.7.min.js"></script>
+<script src="lib/slickgrid/lib/jquery.event.drag-2.2.js"></script>
+<script src="lib/slickgrid/slick.core.js"></script>
+<script src="lib/slickgrid/slick.grid.js"></script>
+<script src="lib/slickgrid/plugins/slick.rowselectionmodel.js"></script>
+<script src="lib/slickgrid/controls/slick.pager.js"></script>
+<script src="lib/slickgrid/slick.dataview.js"></script>
+
+<!-- End SlickGrid -->
+
+<link rel="stylesheet" type="text/css" href="css/d3.paracoords.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<style>
+	body, html {
+	margin: 0;
+	height: 100%;
+	width: 100%;
+	overflow: hidden;
+	font-size: 12px;
+	}
+	#grid, #pager, #filter, #cluster-manager {
+	position: fixed;
+	width: 100%;
+	}
+	#grid {
+	bottom: 0;
+	height: 300px;
+	}
+	#pager {
+	bottom: 306px;
+	height: 20px;
+	}
+	#filter {
+	bottom: 306px;
+	height: 55px;
+	}
+	#cluster-manager {
+	bottom: 367px;
+	height: 35px;
+	}
+	.slick-row:hover {
+	font-weight: bold;
+	color: #069;
+	}
+</style>
+<script src="js/d3.min.js"></script>
+<script src="js/d3.paracoords.js"></script>
+<script src="lib/divgrid.js"></script>
+
+<script type="text/javascript" src="js/FileSaver.js"></script> <!-- handles the vcf file saving -->
+<script type="text/javascript" src="js/data_manager.js"></script> <!-- sort of like a singleton for the data, this helps keep track of the data for all the different modules-->
+<script type="text/javascript" src="js/Variant.js"></script> <!-- represents a variant class in javascript (helps with parsing and data access) -->
+<script type="text/javascript" src="js/Sample.js"></script> <!-- Similar to the variant file in that it represents a sample class in javascript (helps with parsing and data access) -->
+<script type="text/javascript" src="js/VCF.js"></script> <!-- parses out the VCF into variants and samples, also keeps the vcf lines in order so we can write them back out to file -->
+<script type="text/javascript" src="js/filter.js"></script> <!-- handles the filtering html and javascript functionality -->
+<script type="text/javascript" src="js/cluster.js"></script> <!-- handles creating and managing clusters (the html and the javascript) -->
+<nav>
+    <ul>
+        <li><a href="javascript:void(0)">Subclone Finder</a></li>
+    </ul>
+</nav>
+<div id="example" class="parcoords" style="height:240px;"></div>
+<div id="grid-container">
+	<div id="grid"></div>
+	<div id="pager"></div>
+	<div id="filter"></div>
+	<div id="cluster-manager"></div>
+</div>
+<script type="text/javascript" src="js/main.js"></script>

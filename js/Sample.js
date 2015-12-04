@@ -1,11 +1,32 @@
-function Sample(sampleName) {
-	this.sampleName = sampleName;
-	this.variants = [];
-	this.minimum = undefined;
-	this.maximum = undefined;
-	this.countsAndFrequencies = undefined
+function Sample(referenceCount, alternateCounts) {
+	this.referenceCount = referenceCount;
+	this.alternateCounts = alternateCounts;
+	var highestIndex = this.getHighestAlternate(alternateCounts);
+	this.alternateCount = alternateCounts[highestIndex];
+	this.depthCount = this.referenceCount + this.alternateCount;
+	this.alleleFrequency = (this.depthCount > 0) ? parseFloat(this.alternateCount) / parseFloat(this.depthCount) : 0;
 }
 
+Sample.prototype.getDepthCount = function () { return this.depthCount; }
+Sample.prototype.getReferenceCount = function () { return this.referenceCount; }
+Sample.prototype.getAlternateCount = function () { return this.alternateCount; }
+Sample.prototype.getAlternateCounts = function () { return this.alternateCounts; }
+Sample.prototype.getAlleleFrequency = function () { return this.alleleFrequency; }
+
+Sample.prototype.getHighestAlternate = function (alternateCounts) {
+	var maximum = 0;
+	var index = 0;
+	for (var i = 0; i < alternateCounts.length; ++i) {
+		if (alternateCounts[i] > maximum) {
+			maximum = alternateCounts[i];
+			index = i;
+		}
+	}
+	return index;
+
+}
+
+/*
 Sample.prototype.addVariant = function (variant) {
 	this.variants.push(variant);
 }
@@ -21,20 +42,6 @@ Sample.prototype.getMinimumAlternateCount = function () {
 		}
 	}
 	return this.minimum;
-}
-
-Sample.prototype.getMaximumAlternateCount = function () {
-	if (this.minimum == undefined) {
-		this.maximum = 0;
-		for (var i = 0; i < this.variants.length; ++i) {
-			var v = this.variants[i];
-			for (var j = 0; j < v.alternateCounts.length; ++j) {
-				this.maximum = (v.alternateCounts[j] > this.maximum) ? v.alternateCounts[j] : this.maximum;
-			}
-		}
-	}
-	return this.maximum;
-
 }
 
 Sample.prototype.getFrequenciesAndCounts = function () {
@@ -61,3 +68,4 @@ Sample.prototype.getFrequenciesAndCounts = function () {
 	}
 	return this.countsAndFrequencies;
 }
+*/
