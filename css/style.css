@@ -5,6 +5,9 @@ body {
   background: #fcfcfc;
   line-height: 1.45em;
 }
+.process-body {
+  margin-top: 60px;
+}
 nav {
   background-color: #333;
   margin: 0;
@@ -45,7 +48,7 @@ ul {
   background: #222;
 }
 p {
-  width: 560px;
+  width: 90%;
 }
 pre {
   color: #444;
