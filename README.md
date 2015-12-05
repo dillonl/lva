@@ -3,6 +3,7 @@ First thing: Which parts are my code!
 
 Actually, it's probably easier to show you the things that are not my code.
 
+* I library that I rely heavily on is [Parcoords] (https://github.com/syntagmatic/parallel-coordinates)
 * Anything in lib is not mine (though I may have had to make a minor modification).
 * bootstrap-theme.min.css, bootstrap.min.css, d3.paracoords.css, nouislider.min.css
 * FileSaver.js, bootstrap.min.js, d3.min.js, d3.paracoords.js, handlebars.min.js, jquery.min.js, nouislider.min.js
