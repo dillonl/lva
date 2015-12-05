@@ -1,10 +1,16 @@
+// the ignore list tells us which data is not a timepoint, since timepoints don't have a standard naming convention
 var IgnoreList = ['#CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'INFO', 'FORMAT'];
+// When a VCF line is split, these indices indicate which info is where
 var VariantIndices = {'chrom': 0, 'pos': 1, 'info': 7};
+
+/*
+  VCF is responsible for parsing and storing the relevant VCF information.
+ */
 function VCF(vcf) {
 	this.samples = {};
 	this.variants = [];
-	this.vcfHeader = [];
-	this.vcfLines = [];
+	this.vcfHeader = []; // we keep this around for exporting our VCF data
+	this.vcfLines = []; // we keep this around for exporting our VCF data
 	this.parseVCF(vcf);
 }
 
@@ -38,6 +44,7 @@ VCF.prototype.parseVCF = function (vcf) {
 	}
 }
 
+// parseVariant parses the VCF and populates
 VCF.prototype.parseVariant = function(variantLine, sampleIndices) {
 	var variantSplit = variantLine.split('\t');
 	var chrom = variantSplit[VariantIndices.chrom];
