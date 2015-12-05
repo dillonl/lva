@@ -1,3 +1,6 @@
+/*
+  The data manager is the central repository for the vcf data and the grid data.
+ */
 function DataManager() {
 	this.vcf;
 	this.allGridData = [];

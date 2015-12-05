@@ -19,12 +19,15 @@ VCF.prototype.getHeader = function () { return this.vcfHeader; }
 VCF.prototype.getLines = function () { return this.vcfLines; }
 
 //'Allele | Annotation | Annotation_Impact | Gene_Name | Gene_ID | Feature_Type | Feature_ID | Transcript_BioType | Rank | HGVS.c | HGVS.p | cDNA.pos / cDNA.length | CDS.pos / CDS.length | AA.pos / AA.length | Distance | ERRORS / WARNINGS / INFO'
+/*
+  Parses the VCF and populates the variants, VCFHeader and vcfLines
+ */
 VCF.prototype.parseVCF = function (vcf) {
 	var vcfLines = vcf.split('\n');
 	var sampleIndices = {};
-	for (var i = 0; i < vcfLines.length; ++i) {
+	for (var i = 0; i < vcfLines.length; ++i) { // for each vcf line
 		var line = vcfLines[i];
-		if (line.charAt(0) == '#') {
+		if (line.charAt(0) == '#') { // if it's part of the header then add it to the header and get the sample names
 			this.vcfHeader.push(line);
 			if (line.slice(0, 6) == "#CHROM") {
 				var headerSections = line.split('\t');
@@ -35,7 +38,7 @@ VCF.prototype.parseVCF = function (vcf) {
 				}
 			}
 		}
-		else {
+		else { // if it's not part of the header then parse it and add it to the variants
 			this.vcfLines.push(line);
 			var variant = this.parseVariant(line, sampleIndices);
 			if (!variant || line.length == 0) { continue; }
@@ -44,7 +47,7 @@ VCF.prototype.parseVCF = function (vcf) {
 	}
 }
 
-// parseVariant parses the VCF and populates
+// parseVariant parses the variant from a VCF line and populates the Variant parameters, also creates the variant Samples
 VCF.prototype.parseVariant = function(variantLine, sampleIndices) {
 	var variantSplit = variantLine.split('\t');
 	var chrom = variantSplit[VariantIndices.chrom];
@@ -62,17 +65,20 @@ VCF.prototype.parseVariant = function(variantLine, sampleIndices) {
 	return new Variant(chrom, pos, info, samples);
 }
 
+//parses the sample depth count, this is the total not the main alternate + reference
 VCF.prototype.getSampleDepthCount = function(sampleString) {
 	var splitCounts = parseInt(sampleString.split('DP=')[1].split(';')[0]);
 	return splitCounts;
 }
 
+//parses the sample reference count
 VCF.prototype.getSampleReferenceCount = function(sampleString) {
 	var value = {};
 	var splitCounts = sampleString.split(';DP4=')[1].split(',');
 	return parseInt(splitCounts[0]) + parseInt(splitCounts[1]);
 }
 
+//parses the sample reference count
 VCF.prototype.getSampleAlternateCounts = function(sampleString) {
 	var splitCounts = sampleString.split(';DP4=')[1].split(',');
 	var alternateCounts = [];
@@ -86,6 +92,7 @@ VCF.prototype.getSamples = function (){
 	return this.samples;
 }
 
+// parse reference values, this is just the main alternate and the reference
 function parseReferenceValues(counts) {
 	var value = {};
 	var splitCounts = counts.split(';DP4=')[1].split(',');
@@ -97,14 +104,7 @@ function parseReferenceValues(counts) {
 	return value;
 }
 
-/*
-function parseDepthCount(counts) {
-	var value = {};
-	var splitCount = counts.split('DP=')[1].split(';')[0];
-	return parseInt(splitCount);
-}
-*/
-
+// parses the info fields (used in the filters), gets the gene and type
 function parseInfo(infoRaw) {
 	var info = {};
 	if (infoRaw != undefined && infoRaw.indexOf("ANN=") > -1) {

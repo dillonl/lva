@@ -1,3 +1,5 @@
+// This file is not used
+
 function loadSampleDataClicked() {
 	$('#load-sample-button').prop("disabled",true);
 	loadSampleData();

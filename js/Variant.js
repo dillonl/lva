@@ -1,3 +1,4 @@
+// variants store the chromosome, position, info as an array and the samples related to this variant
 var Variant = function (chromosome, position, info, samples) {
 	this.chromosome = chromosome;
 	this.position = position;
@@ -5,24 +6,13 @@ var Variant = function (chromosome, position, info, samples) {
 	this.samples = samples;
 }
 
+// below are just simple getters
 Variant.prototype.getChromosome = function () { return this.chromosome; }
 Variant.prototype.getPosition = function () { return this.position; }
 Variant.prototype.getAnnotation = function () { return this.parsedInfo.annotation; }
 Variant.prototype.getGeneName = function () { return this.parsedInfo.geneName; }
 Variant.prototype.getSamples = function () { return this.samples; }
 
-/*
-var Variant = function (chromosome, position, referenceCount, alternateCounts, parsedInfo) {
-	this.chromosome = chromosome;
-	this.position = position;
-	this.referenceCount = referenceCount;
-	this.alternateCounts = alternateCounts;
-	var depthCount = 0;
-	$.each(this.alternateCounts, function(i,c) { depthCount += c; });
-	this.depthCount = depthCount + referenceCount;
-	this.parsedInfo = parsedInfo;
-}
-*/
 Variant.prototype.getDepthCount = function () {
 	return this.depthCount;
 }
